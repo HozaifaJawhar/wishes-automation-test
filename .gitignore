@@ -13,6 +13,7 @@ playwright/.auth/
 .env
 .env.*
 !.env.example
+CLAUDE.md
 
 # Build and coverage
 dist/

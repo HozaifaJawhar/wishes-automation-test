@@ -3,11 +3,12 @@ import { env } from '@utils/env';
 import { difference, ROUNDING_TOLERANCE } from '@utils/numbers';
 import { ADDRESS_CONFIRMATION_TIMEOUT, ORDER_PLACEMENT_TIMEOUT } from '@utils/timeouts';
 
-// Runs with the session the setup project saved for the `.env` customer.
+// Runs with the session the setup project saved for the `.env` customer. `@shared-account`
+// keeps it to one browser project so no other run uses that account at the same time.
 test.describe('Signed-in checkout', () => {
   test(
     'should place an order with the saved default address already applied',
-    { tag: '@smoke' },
+    { tag: ['@smoke', '@shared-account'] },
     async ({
       page,
       shopApi,

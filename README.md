@@ -12,8 +12,8 @@ End-to-end tests for the storefront (Angular), the admin dashboard (Angular) and
 
 ```bash
 npm ci
-npx playwright install chromium   # add --with-deps on Linux
-cp .env.example .env              # then fill in the URLs and credentials
+npx playwright install chromium firefox webkit   # add --with-deps on Linux
+cp .env.example .env                             # then fill in the URLs and credentials
 ```
 
 `.env` is git-ignored. In CI the same variables come from GitHub repository secrets.

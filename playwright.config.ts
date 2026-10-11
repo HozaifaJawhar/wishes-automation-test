@@ -14,6 +14,13 @@ const STOREFRONT_SPECS = ['tests/storefront/**/*.spec.ts', 'tests/cross-system/*
 const DASHBOARD_SPECS = ['tests/dashboard/**/*.spec.ts'];
 const API_SPECS = ['tests/api/**/*.spec.ts'];
 
+/**
+ * Tests tagged `@shared-account` use the single `.env` customer, which only one test at a time
+ * may use. They run in Chromium only, so the extra browser projects (which run in parallel with
+ * it) never touch that account's cart or orders at the same time.
+ */
+const SHARED_ACCOUNT_TAG = /@shared-account/;
+
 /** Per-surface settings shared by every browser variant of that surface. */
 const storefront = { baseURL: env.storefrontUrl, storageState: STORAGE_STATE.customer };
 const dashboard = { baseURL: env.dashboardUrl, storageState: STORAGE_STATE.admin };
@@ -65,20 +72,23 @@ export default defineConfig({
     },
 
     // ---- More browsers --------------------------------------------------------------------
-    // 1. Install them: npx playwright install firefox webkit --with-deps
-    // 2. Uncomment the projects you want. They reuse the same specs and settings as above.
-    // {
-    //   name: 'storefront-firefox',
-    //   testMatch: STOREFRONT_SPECS,
-    //   dependencies: ['setup'],
-    //   use: { ...devices['Desktop Firefox'], ...storefront },
-    // },
-    // {
-    //   name: 'storefront-webkit',
-    //   testMatch: STOREFRONT_SPECS,
-    //   dependencies: ['setup'],
-    //   use: { ...devices['Desktop Safari'], ...storefront },
-    // },
+    // Install them with: npx playwright install firefox webkit (add --with-deps on Linux).
+    // They reuse the storefront specs and the session the setup project saved in Chromium.
+    {
+      name: 'storefront-firefox',
+      testMatch: STOREFRONT_SPECS,
+      grepInvert: SHARED_ACCOUNT_TAG,
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Firefox'], ...storefront },
+    },
+    {
+      name: 'storefront-webkit',
+      testMatch: STOREFRONT_SPECS,
+      grepInvert: SHARED_ACCOUNT_TAG,
+      dependencies: ['setup'],
+      use: { ...devices['Desktop Safari'], ...storefront },
+    },
+    // Dashboard in more browsers: uncomment the projects you want.
     // {
     //   name: 'dashboard-firefox',
     //   testMatch: DASHBOARD_SPECS,
