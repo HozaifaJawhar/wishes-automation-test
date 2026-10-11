@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Playwright output
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+# Saved sessions contain cookies that grant access to the test accounts.
+playwright/.auth/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Build and coverage
+dist/
+coverage/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json

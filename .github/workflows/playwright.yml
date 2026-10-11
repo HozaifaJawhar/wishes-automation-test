@@ -1,0 +1,58 @@
+name: Playwright Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push to the same branch or PR cancels the run it supersedes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Lint, typecheck and smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium with system dependencies
+        run: npx playwright install chromium --with-deps
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run smoke tests
+        run: npm run test:smoke
+        env:
+          STOREFRONT_URL: ${{ secrets.STOREFRONT_URL }}
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
+          API_URL: ${{ secrets.API_URL }}
+          CUSTOMER_PHONE: ${{ secrets.CUSTOMER_PHONE }}
+          CUSTOMER_PASSWORD: ${{ secrets.CUSTOMER_PASSWORD }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
